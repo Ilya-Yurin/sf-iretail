@@ -7,25 +7,24 @@
 
 namespace VIS\Bundle\CoreBundle\Form;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Class TokenType
+ * Class AccessTokenType
  * @package VIS\Bundle\CoreBundle\Form
  */
-class TokenType extends AbstractType
+class AccessTokenType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', 'email', array(
+            ->add('emailAddress', 'email', array(
                 'required' => true,
                 'constraints' => array(
-                    new NotBlank()
+                    new NotBlank
                 )
             ))
             ->add('password', 'password', array(
@@ -33,7 +32,8 @@ class TokenType extends AbstractType
                 'constraints' => array(
                     new NotBlank
                 )
-            ));
+            ))
+        ;
     }
 
 

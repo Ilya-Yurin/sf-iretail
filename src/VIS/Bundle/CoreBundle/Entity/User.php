@@ -8,6 +8,7 @@
 namespace VIS\Bundle\CoreBundle\Entity;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serializer;
 /**
@@ -17,7 +18,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\Table(name="users")
  *
  */
-class User implements AdvancedUserInterface, \Serializable
+class User extends AbstractEntity implements AdvancedUserInterface
 {
     const
         STATUS_ACTIVE = 1,
@@ -26,7 +27,7 @@ class User implements AdvancedUserInterface, \Serializable
     const
         TYPE_USER = 0,
         TYPE_MANAGER_ADMIN = 1,
-        TYPE_SUPER_ADMIN = 5;
+        TYPE_ADMIN = 5;
 
     /**
      * @var integer $id
@@ -93,6 +94,51 @@ class User implements AdvancedUserInterface, \Serializable
     protected $lastName;
 
     /**
+     * @var string $middleName
+     *
+     * @ORM\Column(name="middle_name", type="string", length=256)
+     *
+     * @Assert\Length(max="256", groups={"create", "update", "profile"})
+     *
+     * @Serializer\Groups({"user.middleName", "session_data", "list"})
+     * @Serializer\SerializedName("middleName")
+     */
+    protected $middleName;
+
+    /**
+     * @var string $phone
+     *
+     * @ORM\Column(name="phone", type="string", length=256)
+     *
+     * @Assert\Length(max="256", groups={"create", "update", "profile"})
+     *
+     * @Serializer\Groups({"user.phone", "session_data", "list"})
+     * @Serializer\SerializedName("phone")
+     */
+    protected $phone;
+
+    /**
+     * @var string $birthday
+     *
+     * @ORM\Column(name="birthday", type="datetime")
+     *
+     * @Serializer\Groups({"user.birthday", "session_data", "list"})
+     * @Serializer\SerializedName("birthday")
+     */
+    protected $birthday;
+
+    /**
+     *
+     * @ORM\Column(name="last_login", type="datetime", nullable=true)
+     */
+    protected $lastLogin;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserToken", mappedBy="user", cascade={"persist", "remove"})
+     */
+    protected $tokens;
+
+    /**
      * @var string $password
      *
      * @ORM\Column(name="password", type="string", length=128)
@@ -125,7 +171,7 @@ class User implements AdvancedUserInterface, \Serializable
      * @Assert\Choice(choices={
      *                  VIS\Bundle\CoreBundle\Entity\User::TYPE_USER,
      *                  VIS\Bundle\CoreBundle\Entity\User::TYPE_MANAGER_ADMIN,
-     *                  VIS\Bundle\CoreBundle\Entity\User::TYPE_SUPER_ADMIN
+     *                  VIS\Bundle\CoreBundle\Entity\User::TYPE_ADMIN
      * }, groups={"create", "update"})
      *
      * @Serializer\Groups({"user.userType", "session_data", "list"})
@@ -158,11 +204,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param string $email
+     * @param $email
+     * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+        return $this;
     }
 
     /**
@@ -174,11 +222,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param string $username
+     * @param $username
+     * @return $this
      */
     public function setUsername($username)
     {
         $this->username = $username;
+        return $this;
     }
 
     /**
@@ -190,23 +240,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param string $password
+     * @param $password
+     * @return $this
      */
     public function setPassword($password)
     {
         $this->password = $password;
-    }
-
-    /**
-     * @return string
-     */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-        ));
+        return $this;
     }
 
     /**
@@ -218,11 +258,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param string $firstName
+     * @param $firstName
+     * @return $this
      */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
+        return $this;
     }
 
     /**
@@ -234,11 +276,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param string $lastName
+     * @param $lastName
+     * @return $this
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+        return $this;
     }
 
     /**
@@ -250,11 +294,13 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * @param mixed $status
+     * @param $status
+     * @return $this
      */
     public function setStatus($status)
     {
         $this->status = $status;
+        return $this;
     }
 
     /**
@@ -265,24 +311,128 @@ class User implements AdvancedUserInterface, \Serializable
         return $this->userType;
     }
 
-    /**
-     * @param mixed $userType
+    /***
+     * @param $userType
+     * @return $this
      */
     public function setUserType($userType)
     {
         $this->userType = $userType;
+        return $this;
     }
 
     /**
-     * @param string $serialized
+     * @return string
      */
-    public function unserialize($serialized)
+    public function getMiddleName()
     {
-        list(
-            $this->id,
-            $this->username,
-            $this->password,
-            ) = unserialize($serialized);
+        return $this->middleName;
+    }
+
+    /**
+     * @param $middleName
+     * @return $this
+     */
+    public function setMiddleName($middleName)
+    {
+        $this->middleName = $middleName;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param $phone
+     * @return $this
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param $birthday
+     * @return $this
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * @param $lastLogin
+     * @return $this
+     */
+    public function setLastLogin($lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+
+    /**
+     * @param UserToken $tokens
+     * @return $this
+     */
+    public function setTokens(UserToken $tokens)
+    {
+        $this->tokens = $tokens;
+        return $this;
+    }
+
+    /**
+     * Add tokens
+     *
+     * @param \VIS\Bundle\CoreBundle\Entity\UserToken $tokens
+     * @return User
+     */
+    public function addToken(UserToken $tokens)
+    {
+        $this->tokens[] = $tokens;
+
+        return $this;
+    }
+
+    /**
+     * Generate random password
+     *
+     * @param int $length
+     * @return string
+     */
+    public function generatePassword($length = 10)
+    {
+        return substr(md5(uniqid()), 0, $length);
     }
 
     public function isAccountNonExpired()
@@ -305,15 +455,28 @@ class User implements AdvancedUserInterface, \Serializable
      */
     public function isEnabled()
     {
-        if($this->status == User::STATUS_ACTIVE){
-            return true;
-        }
-        return false;
+        return ($this->status === self::STATUS_ACTIVE);
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function equals(UserInterface $user)
+    {
+        return md5($this->getUsername()) == md5($user->getUsername());
     }
 
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        switch ($this->userType) {
+            case self::TYPE_USER:
+                return array('ROLE_USER');
+            case self::TYPE_ADMIN:
+                return array('ROLE_USER', 'ROLE_ADMIN');
+            default:
+                return array();
+        }
     }
 
     public function getSalt()
@@ -325,5 +488,29 @@ class User implements AdvancedUserInterface, \Serializable
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->username,
+            $this->password,
+        ));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->username,
+            $this->password,
+            ) = unserialize($serialized);
     }
 }

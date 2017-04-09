@@ -15,32 +15,36 @@ namespace VIS\Bundle\CoreBundle\Component\ORM\Extension;
  * Class CreateAtTrait
  * @package VIS\Bundle\CoreBundle\Component\ORM\Extension
  */
-trait CreateAtTrait
+trait CreatedAtTrait
 {
     /**
-     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(name="created_at", type="datetime")
      *
-     * @ORM\Column(name="create_at", type="datetime", nullable=true)
-     * @Serializer\Groups({"product.createAt", "store.createAt", "user.createAt", "subCategory.createAt", "productType.createAt",
-     *     "mediaBox.createAt", "mailRequest.createAt", "category.createAt",})
-     * @Serializer\SerializedName("createAt")
+     * @Serializer\Groups({"user.createdAt", "session_data"})
+     * @Serializer\SerializedName("createdAt")
      */
-    protected $createAt;
+    protected $createdAt;
 
     /**
+     * Get createdAt
+     *
      * @return \DateTime
      */
-    public function getCreateAt()
+    public function getCreatedAt()
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
     /**
-     * @param \DateTime $createAt
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return $this
      */
-    public function setCreateAt($createAt)
+    public function setCreatedAt($createdAt)
     {
-        $this->createAt = $createAt;
+        $this->createdAt = $createdAt;
+        return $this;
     }
-
 }

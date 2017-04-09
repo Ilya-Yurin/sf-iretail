@@ -7,6 +7,7 @@
 
 namespace VIS\Bundle\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -30,9 +31,10 @@ class UserToken
     protected $token;
 
     /**
-     * @ORM\Column(name="user_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tokens")
+     * @Assert\NotBlank()
      **/
-    protected $user_id;
+    protected $user;
 
     /**
      * @ORM\Column(name="created_at", type="datetime")
@@ -64,19 +66,19 @@ class UserToken
     }
 
     /**
-     * @return string user id.
+     * @return User
      */
-    public function getUserId()
+    public function getUser()
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**
-     * @param string $value user id.
+     * @param User $value
      */
-    public function setUserId($value)
+    public function setUser($value)
     {
-        $this->user_id = $value;
+        $this->user = $value;
     }
 
     /**

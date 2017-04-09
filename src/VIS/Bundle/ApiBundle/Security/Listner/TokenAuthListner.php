@@ -19,6 +19,10 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use VIS\Bundle\ApiBundle\Security\Authentication\Toke\UserAccessToken;
 
+/**
+ * Class TokenAuthListner
+ * @package VIS\Bundle\ApiBundle\Security\Listner
+ */
 class TokenAuthListner implements ListenerInterface
 {
     /**

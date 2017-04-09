@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="token_auth.handler.class">VIS\ApiBundle\Component\HttpFoundation\Storage\MySql\TokenAuthHandler</parameter>
+        <parameter key="vis_api.security.token_auth.token_manager.class">VIS\Bundle\ApiBundle\Security\Authentication\Manager\TokenAuthManager</parameter>
+        <parameter key="vis_api.security.token_auth.provider.class">VIS\Bundle\ApiBundle\Security\Authentication\Provider\TokenAuthProvider</parameter>
+        <parameter key="vis_api.security.token_auth.listener.class">VIS\Bundle\ApiBundle\Security\Firewall\TokenAuthListner</parameter>
+    </parameters>
+    
+    <services>
+        <!-- TokenAuth Handler -->
+        <service id="token_auth.handler" class="%token_auth.handler.class%">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>APP\Bundle\CoreBundle\Entity\UserToken</argument>
+        </service>
+        
+        <!-- TokenManager -->
+        <service id="vis_api.security.token_auth.token_manager" class="%vis_api.security.token_auth.token_manager.class%">
+            <argument type="service" id="token_auth.handler"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%token_auth.token_expired_time%</argument>                
+        </service>
+        
+        <!-- TokenAuth Provider-->
+        <service id="vis_api.security.token_auth.provider" class="%vis_api.security.token_auth.provider.class%" public="false">
+            <argument /> <!-- User Provider -->
+            <argument>%kernel.cache_dir%/security/nonces</argument>
+            <argument type="service" id="vis_api.security.token_auth.token_manager"/>
+        </service>
+        
+        <!-- TokenAuth Listener-->
+        <service id="vis_api.security.token_auth.listener" class="%vis_api.security.token_auth.listener.class%" public="false">
+            <argument type="service" id="security.context"/>
+            <argument type="service" id="security.authentication.manager" />
+        </service>
+
+    </services>
+</container>

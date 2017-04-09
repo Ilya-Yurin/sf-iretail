@@ -7,7 +7,6 @@
 
 namespace VIS\Bundle\CoreBundle\Form;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,7 +23,8 @@ class UserType extends AbstractType
         $builder
             ->add('firstName', 'text', array())
             ->add('lastName', 'text', array())
-            ->add('email', 'email', array())
+            ->add('middleName', 'text', array())
+            ->add('emailAddress', 'email', array())
             ->add('password', 'password', array(
             ))
             ->add('status', 'choice', array(
@@ -36,11 +36,9 @@ class UserType extends AbstractType
             ->add('userType', 'choice', array(
                 'choices' => array(
                     User::TYPE_USER => User::TYPE_USER,
-                    User::TYPE_MANAGER_ADMIN => User::TYPE_MANAGER_ADMIN,
-                    User::TYPE_SUPER_ADMIN => User::TYPE_SUPER_ADMIN,
+                    User::TYPE_ADMIN => User::TYPE_ADMIN,
                 )
-            ))
-        ;
+            ));
     }
 
 

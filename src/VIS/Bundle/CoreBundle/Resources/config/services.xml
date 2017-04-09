@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="vis_core.constraint.email_is_exist.class">VIS\Bundle\CoreBundle\Component\Form\Validator\Constraints\EmailIsExistValidator</parameter>
+        <parameter key="vis_core.constraint.unique_not_deleted.class">VIS\Bundle\CoreBundle\Component\Form\Validator\Constraints\UniqueNotDeletedValidator</parameter>
+        <parameter key="vis_core.type.entity_id.class">VIS\Bundle\CoreBundle\Component\Form\Type\EntityIdType</parameter>
+        <parameter key="vis_core.twig_extension.class">VIS\Bundle\CoreBundle\Twig\Extension</parameter>
+    </parameters>
+
+    <services>
+        <!-- Email is exist constraint -->
+        <service id="core_api.constraint.email_is_exist" class="%vis_core.constraint.email_is_exist.class%">
+            <argument type="service" id="doctrine"/>
+            <tag name="validator.constraint_validator" alias="emailIsExist" />
+        </service>
+
+        <!-- EntityIdType -->
+        <service id="core_api.type.entity_id" class="%vis_core.type.entity_id.class%">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="form.type" alias="entity_id" />
+        </service>
+
+        <!-- Twig Extension -->
+        <service id="core_api.twig_extension" class="%vis_core.twig_extension.class%" public="false">
+            <tag name="twig.extension" />
+        </service>
+    </services>
+</container>

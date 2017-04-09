@@ -15,32 +15,36 @@ namespace VIS\Bundle\CoreBundle\Component\ORM\Extension;
  * Class UpdateAtTrait
  * @package VIS\Bundle\CoreBundle\Component\ORM\Extension
  */
-trait UpdateAtTrait
+trait UpdatedAtTrait
 {
     /**
-     * @var \DateTime
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(name="updated_at", type="datetime")
      *
-     * @ORM\Column(name="update_at", type="datetime", nullable=true)
-     * @Serializer\Groups({"product.updateAt", "store.updateAt", "user.updateAt", "subCategory.updateAt", "productType.updateAt",
-     *     "mediaBox.updateAt", "mailRequest.updateAt", "category.updateAt",})
-     * @Serializer\SerializedName("updateAt")
+     * @Serializer\Groups({"user.updatedAt", "session_data"})
+     * @Serializer\SerializedName("updatedAt")
      */
-    protected $updateAt;
+    protected $updatedAt;
 
     /**
+     * Get updatedAt
+     *
      * @return \DateTime
      */
-    public function getUpdateAt()
+    public function getUpdatedAt()
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
     /**
-     * @param \DateTime $updateAt
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return $this
      */
-    public function setUpdateAt($updateAt)
+    public function setUpdatedAt($updatedAt)
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
-
 }
